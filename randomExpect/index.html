@@ -16,7 +16,7 @@
 
 <body>
     <header>
-        <div class="container">
+        <div class="myContainer">
             <div class="header-inner">
                 <div class="logo"><a href="../">SalmonTools</a></div>
             </div>
@@ -24,7 +24,7 @@
     </header>
 
     <nav>
-        <div class="contianer">
+        <div class="myContainer">
             <ul class="navbar">
                 <li><a href="../randomExpect/index.html">全ブキコンプ期待値計算</a></li>
                 <li><a href="../nora/index.html">野良評価値予想</a></li>
@@ -33,10 +33,14 @@
     </nav>
 
     <section>
-        <div class="container">
+        <div class="myContainer">
             <main>
-                <h1>サーモンラン全ランダム期待値計算機</h1>
-                <div>
+                <div class="div-overview">
+                    <h1>全ブキコンプ期待値計算</h1>
+                    <p>コンプできたブキの種類数とWaves数をもとに、あなたの引き運が「上振れ/下振れ」なのかどうか判定します。</p>
+                    <p><b>Tips:</b> ブキ全50種をコンプできるWave数の期待値は約280です。是非挑戦してみましょう！</p>
+                </div>
+                <div class="div-form">
                     <label class="title-input">
                         集めたブキの種類数:<input id="weapons" class="text-input" type="text">
                     </label>
@@ -45,8 +49,10 @@
                     </label>
                     <button id="btn" type="button" pys-onClick="click">計算</button>
                 </div>
-                <h4 id="print"></h4>
-                <div id="plot"></div>
+                <div class="div-result">
+                    <p id="print"></p>
+                    <div id="plot" class="pyPlot"></div>
+                </div>
             </main>
         </div>
     </section>
@@ -54,25 +60,26 @@
     <py-script>
 import matplotlib.pyplot as plt
 
+Coef = [0.2 + i * 0.016 for i in range(51)]  # 確率係数
+
+Prob = [[0]*51]
+Prob[0][0] = 1
+
+for i in range(700):
+    newProb = []
+    for j in range(51):
+        if j == 0:
+            newProb.append(Prob[-1][j] * Coef[j])
+        else:
+            newProb.append(Prob[-1][j] * Coef[j] + Prob[-1][j-1] * (1 - Coef[j-1]))
+    Prob.append(newProb)
+
 def click(*ags, **kws):
     waves = int(Element("waves").element.value)
     weapons = int(Element("weapons").element.value)
 
-    Coef = [0.2 + i * 0.016 for i in range(51)]  # 確率係数
-
-    Prob = [[0]*51]
-    Prob[0][0] = 1
-
-    for i in range(700):
-        newProb = []
-        for j in range(51):
-            if j == 0:
-                newProb.append(Prob[-1][j] * Coef[j])
-            else:
-                newProb.append(Prob[-1][j] * Coef[j] + Prob[-1][j-1] * (1 - Coef[j-1]))
-        Prob.append(newProb)
-
     y = []
+    global Prob
     for i in range(701):
         s = sum(Prob[i][weapons:])
         y.append(s)
@@ -86,7 +93,6 @@ def click(*ags, **kws):
     ax.plot(x, y)
     ax.hlines(y[waves], 0, len(y))
     pyscript.write("plot", fig)
-
     </py-script>
 
 </body>
