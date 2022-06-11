@@ -1,29 +1,31 @@
 @charset "utf-8";
 
 body {
-    font-size: 16px;
+    font-size: 14px;
     font-family: system-ui;
+    line-height: 1.5;
     margin: 0;
 }
 
 body h1 {
-    font-size: 30px;
+    font-size: 20px;
     font-family: sans-serif;
 }
 
-.container {
-    margin: 0 auto 0 auto;
-    padding: 0 16px 0 16px;
-    max-width: 1000px;
+.myContainer {
+    /* margin: 0 auto 0 auto; */
+    padding: 0 30px 0 30px;
+    /* max-width: 1000px; */
 }
 
 /* ヘッダー */
 header {
-    background: rgb(255, 173, 164);
+    
 }
 
 .header-inner {
     padding: 10px 10px 0 10px;
+    background: rgb(255, 173, 164);
 }
 
 .logo {
@@ -37,11 +39,12 @@ header {
 
 /* ナビゲーションバー */
 nav {
-    background: slategray;
+
 }
 
 .navbar {
     display: flex;
+    background: slategray;
     margin: 0;
     padding: 0;
     list-style-type: none;
@@ -59,8 +62,14 @@ nav {
     color: black;
 }
 
+.pyPlot{
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
 .text-input {
-    width: 10%; /*親要素いっぱい広げる*/
+    width: 20%; /*親要素いっぱい広げる*/
     padding: 10px 15px; /*ボックスを大きくする*/
     border-radius: 3px; /*ボックス角の丸み*/
     border: 2px solid #ddd; /*枠線*/
