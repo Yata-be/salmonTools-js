@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="全ブキコンプ期待値計算">
+    <title>全ブキコンプ期待値計算</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+        - matplotlib
+    </py-env>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <div class="logo"><a href="../index.html">SalmonTools</a></div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="contianer">
+            <ul class="navbar">
+                <li><a href="/randomExpect/index.html">全ブキコンプ期待値計算</a></li>
+                <li><a href="/nora/index.html">野良評価値予想</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section>
+        <div class="container">
+            <main>
+                <h1>サーモンラン全ランダム期待値計算機</h1>
+                <div>
+                    <label class="title-input">
+                        集めたブキの種類数:<input id="weapons" class="text-input" type="text">
+                    </label>
+                    <label class="title-input">
+                        Wave数:<input id="waves" class="text-input" type="text">
+                    </label>
+                    <button id="btn" type="button" pys-onClick="click">計算</button>
+                </div>
+                <h4 id="print"></h4>
+                <div id="plot"></div>
+            </main>
+        </div>
+    </section>
+
+    <py-script>
+import matplotlib.pyplot as plt
+
+def click(*ags, **kws):
+    waves = int(Element("waves").element.value)
+    weapons = int(Element("weapons").element.value)
+
+    Coef = [0.2 + i * 0.016 for i in range(51)]  # 確率係数
+
+    Prob = [[0]*51]
+    Prob[0][0] = 1
+
+    for i in range(700):
+        newProb = []
+        for j in range(51):
+            if j == 0:
+                newProb.append(Prob[-1][j] * Coef[j])
+            else:
+                newProb.append(Prob[-1][j] * Coef[j] + Prob[-1][j-1] * (1 - Coef[j-1]))
+        Prob.append(newProb)
+
+    y = []
+    for i in range(701):
+        s = sum(Prob[i][weapons:])
+        y.append(s)
+        if s > 1 - 10**-5:
+            break
+    x = [i for i in range(len(y))]
+
+    pyscript.write("print", str(waves) + "Wavesで" + str(weapons) + "種類以上コンプできる確率: "+ str(y[waves]))
+
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    ax.hlines(y[waves], 0, len(y))
+    pyscript.write("plot", fig)
+
+    </py-script>
+
+</body>
+
+</html>
