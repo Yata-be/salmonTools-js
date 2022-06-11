@@ -1,0 +1,77 @@
+@charset "utf-8";
+
+body {
+    font-size: 16px;
+    font-family: system-ui;
+    margin: 0;
+}
+
+body h1 {
+    font-size: 30px;
+    font-family: sans-serif;
+}
+
+.container {
+    margin: 0 auto 0 auto;
+    padding: 0 16px 0 16px;
+    max-width: 1000px;
+}
+
+/* ヘッダー */
+header {
+    background: rgb(255, 173, 164);
+}
+
+.header-inner {
+    padding: 10px 10px 0 10px;
+}
+
+.logo {
+    font-size: 30px;
+}
+
+.logo a {
+    color: #000;
+    text-decoration: none;
+}
+
+/* ナビゲーションバー */
+nav {
+    background: slategray;
+}
+
+.navbar {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.navbar li a {
+    display: block;
+    padding: 10px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.navbar li a:hover {
+    background: rgb(220, 220, 220);
+    color: black;
+}
+
+.text-input {
+    width: 10%; /*親要素いっぱい広げる*/
+    padding: 10px 15px; /*ボックスを大きくする*/
+    border-radius: 3px; /*ボックス角の丸み*/
+    border: 2px solid #ddd; /*枠線*/
+    box-sizing: border-box; /*横幅の解釈をpadding, borderまでとする*/
+}
+
+#btn {
+    color: #fff;
+    background: #f56500;
+    padding: 10px 15px; /*ボックスを大きくする*/
+    border-radius: 3px; /*ボックス角の丸み*/
+    border: 2px solid #ddd; /*枠線*/
+
+}
