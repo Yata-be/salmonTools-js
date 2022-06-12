@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="全ブキコンプ期待値計算">
     <title>全ブキコンプ期待値計算</title>
-    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
     <py-env>
         - matplotlib
     </py-env>
@@ -34,27 +34,28 @@
 
     <section>
         <div class="myContainer">
-            <main>
-                <div class="div-overview">
-                    <h1>全ブキコンプ期待値計算</h1>
-                    <p>コンプできたブキの種類数とWaves数をもとに、あなたの引き運が「上振れ/下振れ」なのかどうか判定します。</p>
-                    <p><b>Tips:</b> ブキ全50種をコンプできるWave数の期待値は約280です。是非挑戦してみましょう！</p>
-                </div>
-                <div class="div-form">
-                    <label class="title-input">
-                        集めたブキの種類数:<input id="weapons" class="text-input" type="text">
-                    </label>
-                    <label class="title-input">
-                        Wave数:<input id="waves" class="text-input" type="text">
-                    </label>
-                    <button id="btn" type="button" pys-onClick="click">計算</button>
-                </div>
-                <div class="div-result">
-                    <p id="print"></p>
-                    <div id="plot" class="pyPlot"></div>
-                </div>
-            </main>
-        </div>
+            <div class="div-overview">
+                <h1>全ブキコンプ期待値計算</h1>
+                <p>コンプできたブキの種類数とWaves数をもとに、あなたの引き運が「上振れ/下振れ」なのかどうか判定します。</p>
+                <p><b>Tips:</b> ブキ全50種をコンプできるWave数の期待値は約280です。是非挑戦してみましょう！</p>
+            </div>
+            <div class="div-form">
+                <label class="title-input">
+                    集めたブキの種類数：<input id="weapons" class="text-input"
+                        type="number">
+                </label>
+                <label class="title-input">
+                    Wave数：<input id="waves" class="text-input"
+                        type="number">
+                </label>
+                <button id="btn" type="button" pys-onClick="click">計算</button>
+            </div>
+            <div class="div-result">
+                <p id="error"></p>
+                <p id="print"></p>
+                <p id="overview"></p>
+                <div id="plot" class="pyPlot"></div>
+            </div>
     </section>
 
     <py-script>
@@ -75,8 +76,22 @@ for i in range(700):
     Prob.append(newProb)
 
 def click(*ags, **kws):
-    waves = int(Element("waves").element.value)
     weapons = int(Element("weapons").element.value)
+    if weapons < 0 or weapons > 50:
+        pyscript.write("error", "ブキ種類数は0以上50以下で入力してください。")
+        pyscript.write("print", "")
+        pyscript.write("overview", "")
+        pyscript.write("plot", "")
+        return 0
+
+    waves = int(Element("waves").element.value)
+    if waves < 1 or waves > 700:
+        pyscript.write("error", "Wave数は1以上700以下で入力してください。")
+        pyscript.write("print", "")
+        pyscript.write("overview", "")
+        pyscript.write("plot", "")
+        return 0
+    pyscript.write("error", "")
 
     y = []
     global Prob
@@ -86,8 +101,15 @@ def click(*ags, **kws):
         if s > 1 - 10**-5:
             break
     x = [i for i in range(len(y))]
-
-    pyscript.write("print", str(waves) + "Wavesで" + str(weapons) + "種類以上コンプできる確率: "+ str(y[waves]))
+    
+    ans = y[waves] * 100
+    if ans >= 50:
+        fortune = round((ans - 50) * 2)
+        pyscript.write("print", "あなたの運は下振れしています。下振れ度：" + str(fortune))
+    else:
+        fortune = round((50 - ans) * 2)
+        pyscript.write("print", "あなたの運は上振れしています。上振れ度：" + str(fortune))  
+    pyscript.write("overview", str(waves) + " Wavesで " + str(weapons) + " 種類以上コンプできる確率は "+ str(round(ans)) + "％ です。")
 
     fig, ax = plt.subplots()
     ax.plot(x, y)
