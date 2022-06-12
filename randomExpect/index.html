@@ -36,7 +36,7 @@
         <div class="myContainer">
             <div class="div-overview">
                 <h1>全ブキコンプ期待値計算</h1>
-                <p>コンプできたブキの種類数とWaves数をもとに、あなたの引き運が「上振れ/下振れ」なのかどうか判定します。</p>
+                <p>コンプできたブキの種類数とWave数をもとに、あなたの引き運が「上振れ/下振れ」なのかどうか判定します。</p>
                 <p><b>Tips:</b> ブキ全50種をコンプできるWave数の期待値は約280です。是非挑戦してみましょう！</p>
             </div>
             <div class="div-form">
@@ -91,6 +91,7 @@ def click(*ags, **kws):
         pyscript.write("overview", "")
         pyscript.write("plot", "")
         return 0
+    
     pyscript.write("error", "")
 
     y = []
@@ -98,6 +99,8 @@ def click(*ags, **kws):
     for i in range(701):
         s = sum(Prob[i][weapons:])
         y.append(s)
+        if s < 0.5:
+            half = i
         if s > 1 - 10**-5:
             break
     x = [i for i in range(len(y))]
@@ -112,8 +115,15 @@ def click(*ags, **kws):
     pyscript.write("overview", str(waves) + " Wavesで " + str(weapons) + " 種類以上コンプできる確率は "+ str(round(ans)) + "％ です。")
 
     fig, ax = plt.subplots()
-    ax.plot(x, y)
-    ax.hlines(y[waves], 0, len(y))
+    ax.plot(x, y, color = "k")
+    ax.vlines(waves, 0, 1)
+    ax.axvspan(0, half, color = "lightcyan")
+    ax.axvspan(half, len(y), color = "peachpuff")
+    ax.set_xlim(0, len(y))
+    ax.set_ylim(0, 1)
+    ax.set_xlabel("Waves", fontsize=18)
+    ax.set_ylabel("Probability", fontsize=18)
+
     pyscript.write("plot", fig)
     </py-script>
 
