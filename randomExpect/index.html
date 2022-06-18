@@ -38,6 +38,7 @@
                 <h1>全ブキコンプ期待値計算</h1>
                 <p>コンプできたブキの種類数とWave数をもとに、あなたの引き運が「上振れ/下振れ」なのかどうか判定します。</p>
                 <p><b>Tips:</b> ブキ全50種をコンプできるWave数の期待値は約280です。是非挑戦してみましょう！</p>
+                <p><b>注:</b> ブキ種類数は<span class="error">クマブキを除いて</span>数えてください。</p>
             </div>
             <div class="div-form">
                 <label class="title-input">
@@ -51,7 +52,7 @@
                 <button id="btn" type="button" pys-onClick="click">計算</button>
             </div>
             <div class="div-result">
-                <p id="error"></p>
+                <p id="error" class="error"></p>
                 <p id="print"></p>
                 <p id="overview"></p>
                 <div id="plot" class="pyPlot"></div>
@@ -92,10 +93,19 @@ def click(*ags, **kws):
         pyscript.write("plot", "")
         return 0
     
+    if waves < weapons:
+        pyscript.write("error", "Wave数はブキ種類数以上にしてください。")
+        pyscript.write("print", "")
+        pyscript.write("overview", "")
+        pyscript.write("plot", "")
+        return 0
+
     pyscript.write("error", "")
 
     y = []
     global Prob
+    half = 0
+
     for i in range(701):
         s = sum(Prob[i][weapons:])
         y.append(s)
@@ -105,14 +115,23 @@ def click(*ags, **kws):
             break
     x = [i for i in range(len(y))]
     
-    ans = y[waves] * 100
+    if waves >= len(y):
+        ans = 100
+    else:
+        ans = y[waves] * 100
     if ans >= 50:
         fortune = round((ans - 50) * 2)
         pyscript.write("print", "あなたの運は下振れしています。下振れ度：" + str(fortune))
     else:
         fortune = round((50 - ans) * 2)
-        pyscript.write("print", "あなたの運は上振れしています。上振れ度：" + str(fortune))  
-    pyscript.write("overview", str(waves) + " Wavesで " + str(weapons) + " 種類以上コンプできる確率は "+ str(round(ans)) + "％ です。")
+        pyscript.write("print", "あなたの運は上振れしています。上振れ度：" + str(fortune))
+    if ans < 1:
+        ansStr = "{:.2}".format(ans)
+    elif ans > 99:
+        ansStr = "{:.4}".format(ans)
+    else:
+        ansStr = str(round(ans))
+    pyscript.write("overview", str(waves) + " Wavesで " + str(weapons) + " 種類以上コンプできる確率は "+ ansStr + "% です。")
 
     fig, ax = plt.subplots()
     ax.plot(x, y, color = "k")
