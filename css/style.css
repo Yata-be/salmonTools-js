@@ -76,7 +76,7 @@ body p {
     height: auto;
 }
 
-#error {
+.error {
     color: red;
 }
 
