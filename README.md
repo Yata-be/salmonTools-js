@@ -3,7 +3,7 @@
 ## 概要
 サーモンランで使える（本当に？）ツール群を提供します。
 
-## 閲覧
+## 閲覧リンク
 https://yata-be.github.io/salmonTools/
 
 ## 内容
@@ -14,4 +14,7 @@ https://yata-be.github.io/salmonTools/
 
 ## 使用技術
 PyScript, HTML, CSS
+
+## ライセンス
+[MITライセンス](LICENSE)です。
 
