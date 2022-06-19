@@ -53,8 +53,16 @@
             </div>
             <div class="div-result">
                 <p id="error" class="error"></p>
-                <p id="print"></p>
-                <p id="overview"></p>
+                <p id="print">
+                    <span id="print1"></span>
+                    <span id="print2"></span>
+                    <span id="print3"></span>
+                </p>
+                <p id="overview">
+                    <span id="overview1"></span>
+                    <sup id="exp"></sup>
+                    <span id="overview2"></span>
+                </p>
                 <div id="plot" class="pyPlot"></div>
             </div>
     </section>
@@ -81,7 +89,9 @@ def click(*ags, **kws):
     if weapons < 0 or weapons > 50:
         pyscript.write("error", "ブキ種類数は0以上50以下で入力してください。")
         pyscript.write("print", "")
-        pyscript.write("overview", "")
+        pyscript.write("overview1", "")
+        pyscript.write("exp", "")
+        pyscript.write("overview2", "")
         pyscript.write("plot", "")
         return 0
 
@@ -89,14 +99,18 @@ def click(*ags, **kws):
     if waves < 1 or waves > 700:
         pyscript.write("error", "Wave数は1以上700以下で入力してください。")
         pyscript.write("print", "")
-        pyscript.write("overview", "")
+        pyscript.write("overview1", "")
+        pyscript.write("exp", "")
+        pyscript.write("overview2", "")
         pyscript.write("plot", "")
         return 0
     
     if waves < weapons:
         pyscript.write("error", "Wave数はブキ種類数以上にしてください。")
         pyscript.write("print", "")
-        pyscript.write("overview", "")
+        pyscript.write("overview1", "")
+        pyscript.write("exp", "")
+        pyscript.write("overview2", "")
         pyscript.write("plot", "")
         return 0
 
@@ -121,17 +135,35 @@ def click(*ags, **kws):
         ans = y[waves] * 100
     if ans >= 50:
         fortune = round((ans - 50) * 2)
-        pyscript.write("print", "あなたの運は下振れしています。下振れ度：" + str(fortune))
+        pyscript.write("print1", "あなたの運は下振れしています。下振れ度：")
+        pyscript.write("print2", str(fortune))
+        pyscript.write("print3", "")
     else:
         fortune = round((50 - ans) * 2)
-        pyscript.write("print", "あなたの運は上振れしています。上振れ度：" + str(fortune))
-    if ans < 1:
-        ansStr = "{:.2}".format(ans)
-    elif ans > 99:
-        ansStr = "{:.4}".format(ans)
+        pyscript.write("print1", "あなたの運は上振れしています。上振れ度：")
+        pyscript.write("print2", "")
+        pyscript.write("print3", str(fortune))
+
+    if 10**-4 <= ans < 1:
+        ansStr = "{:.2}".format(float(ans))
+        exp = ""
+    elif 0 < ans < 10**-4:
+        tmp = "{:.2}".format(float(ans))
+        ind = tmp.index("-")
+        ansStr = tmp[:ind - 1] + " × 10"
+        exp = "-" + str(int(tmp[ind + 1:]))
+    elif 1 <= ans <= 99:
+        ansStr = "{:.1f}".format(float(ans))
+        exp = ""
+    elif 99 < ans < 100:
+        ansStr = "{:.4}".format(float(ans))
+        exp = ""
     else:
-        ansStr = str(round(ans))
-    pyscript.write("overview", str(waves) + " Wavesで " + str(weapons) + " 種類以上コンプできる確率は "+ ansStr + "% です。")
+        ansStr = str(int(ans))
+        exp = ""
+    pyscript.write("overview1", str(waves) + " Wavesで " + str(weapons) + " 種類以上コンプできる確率は "+ ansStr)
+    pyscript.write("exp", exp)
+    pyscript.write("overview2", "% です。")
 
     fig, ax = plt.subplots()
     ax.plot(x, y, color = "k")
