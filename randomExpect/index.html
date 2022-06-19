@@ -53,7 +53,11 @@
             </div>
             <div class="div-result">
                 <p id="error" class="error"></p>
-                <p id="print"></p>
+                <p id="print">
+                    <span id="print1"></span>
+                    <span id="print2"></span>
+                    <span id="print3"></span>
+                </p>
                 <p id="overview">
                     <span id="overview1"></span>
                     <sup id="exp"></sup>
@@ -131,10 +135,15 @@ def click(*ags, **kws):
         ans = y[waves] * 100
     if ans >= 50:
         fortune = round((ans - 50) * 2)
-        pyscript.write("print", "あなたの運は下振れしています。下振れ度：" + str(fortune))
+        pyscript.write("print1", "あなたの運は下振れしています。下振れ度：")
+        pyscript.write("print2", str(fortune))
+        pyscript.write("print3", "")
     else:
         fortune = round((50 - ans) * 2)
-        pyscript.write("print", "あなたの運は上振れしています。上振れ度：" + str(fortune))
+        pyscript.write("print1", "あなたの運は上振れしています。上振れ度：")
+        pyscript.write("print2", "")
+        pyscript.write("print3", str(fortune))
+
     if 10**-4 <= ans < 1:
         ansStr = "{:.2}".format(float(ans))
         exp = ""
