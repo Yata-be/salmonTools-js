@@ -6,12 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="全ブキコンプ期待値計算">
     <title>全ブキコンプ期待値計算</title>
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
     <link rel="stylesheet" href="../css/style.css">
-    <py-env>
-        - matplotlib
-    </py-env>
 </head>
 
 <body>
@@ -35,10 +30,12 @@
     <section>
         <div class="myContainer">
             <div class="div-overview">
-                <h1>全ブキコンプ期待値計算</h1>
+                <h1>全ブキコンプ期待値計算【サーモンランNW】</h1>
                 <p>コンプできたブキの種類数とWave数をもとに、あなたの引き運が「上振れ/下振れ」なのかどうか判定します。</p>
-                <p><b>Tips:</b> ブキ全50種をコンプできるWave数の期待値は約280です。是非挑戦してみましょう！</p>
+                <!-- TODO: 期待値計算 -->
+                <!-- <p><b>Tips:</b> ブキ全55種をコンプできるWave数の期待値は約280です。是非挑戦してみましょう！</p> -->
                 <p><b>注:</b> ブキ種類数は<span class="error">クマブキを除いて</span>数えてください。</p>
+                <p>2023/1/17 Ver. 2.0.0に対応</p>
             </div>
             <div class="div-form">
                 <label class="title-input">
@@ -49,7 +46,7 @@
                     Wave数：<input id="waves" class="text-input"
                         type="number">
                 </label>
-                <button id="btn" type="button" pys-onClick="click">計算</button>
+                <button id="btn" type="button" onClick="click">計算</button>
             </div>
             <div class="div-result">
                 <p id="error" class="error"></p>
@@ -65,119 +62,9 @@
                 </p>
                 <div id="plot" class="pyPlot"></div>
             </div>
+        </div>
     </section>
-
-    <py-script>
-import matplotlib.pyplot as plt
-
-Coef = [0.2 + i * 0.016 for i in range(51)]  # 確率係数
-
-Prob = [[0]*51]
-Prob[0][0] = 1
-
-for i in range(700):
-    newProb = []
-    for j in range(51):
-        if j == 0:
-            newProb.append(Prob[-1][j] * Coef[j])
-        else:
-            newProb.append(Prob[-1][j] * Coef[j] + Prob[-1][j-1] * (1 - Coef[j-1]))
-    Prob.append(newProb)
-
-def click(*ags, **kws):
-    weapons = int(Element("weapons").element.value)
-    if weapons < 0 or weapons > 50:
-        pyscript.write("error", "ブキ種類数は0以上50以下で入力してください。")
-        pyscript.write("print", "")
-        pyscript.write("overview1", "")
-        pyscript.write("exp", "")
-        pyscript.write("overview2", "")
-        pyscript.write("plot", "")
-        return 0
-
-    waves = int(Element("waves").element.value)
-    if waves < 1 or waves > 700:
-        pyscript.write("error", "Wave数は1以上700以下で入力してください。")
-        pyscript.write("print", "")
-        pyscript.write("overview1", "")
-        pyscript.write("exp", "")
-        pyscript.write("overview2", "")
-        pyscript.write("plot", "")
-        return 0
-    
-    if waves < weapons:
-        pyscript.write("error", "Wave数はブキ種類数以上にしてください。")
-        pyscript.write("print", "")
-        pyscript.write("overview1", "")
-        pyscript.write("exp", "")
-        pyscript.write("overview2", "")
-        pyscript.write("plot", "")
-        return 0
-
-    pyscript.write("error", "")
-
-    y = []
-    global Prob
-    half = 0
-
-    for i in range(701):
-        s = sum(Prob[i][weapons:])
-        y.append(s)
-        if s < 0.5:
-            half = i
-        if s > 1 - 10**-5:
-            break
-    x = [i for i in range(len(y))]
-    
-    if waves >= len(y):
-        ans = 100
-    else:
-        ans = y[waves] * 100
-    if ans >= 50:
-        fortune = round((ans - 50) * 2)
-        pyscript.write("print1", "あなたの運は下振れしています。下振れ度：")
-        pyscript.write("print2", str(fortune))
-        pyscript.write("print3", "")
-    else:
-        fortune = round((50 - ans) * 2)
-        pyscript.write("print1", "あなたの運は上振れしています。上振れ度：")
-        pyscript.write("print2", "")
-        pyscript.write("print3", str(fortune))
-
-    if 10**-4 <= ans < 1:
-        ansStr = "{:.2}".format(float(ans))
-        exp = ""
-    elif 0 < ans < 10**-4:
-        tmp = "{:.2}".format(float(ans))
-        ind = tmp.index("-")
-        ansStr = tmp[:ind - 1] + " × 10"
-        exp = "-" + str(int(tmp[ind + 1:]))
-    elif 1 <= ans <= 99:
-        ansStr = "{:.1f}".format(float(ans))
-        exp = ""
-    elif 99 < ans < 100:
-        ansStr = "{:.4}".format(float(ans))
-        exp = ""
-    else:
-        ansStr = str(int(ans))
-        exp = ""
-    pyscript.write("overview1", str(waves) + " Wavesで " + str(weapons) + " 種類以上コンプできる確率は "+ ansStr)
-    pyscript.write("exp", exp)
-    pyscript.write("overview2", "% です。")
-
-    fig, ax = plt.subplots()
-    ax.plot(x, y, color = "k")
-    ax.vlines(waves, 0, 1)
-    ax.axvspan(0, half, color = "lightcyan")
-    ax.axvspan(half, len(y), color = "peachpuff")
-    ax.set_xlim(0, len(y))
-    ax.set_ylim(0, 1)
-    ax.set_xlabel("Waves", fontsize=18)
-    ax.set_ylabel("Probability", fontsize=18)
-
-    pyscript.write("plot", fig)
-    </py-script>
-
+    <script type="text/javascript" src="randomExpect.js"></script>
 </body>
 
 </html>

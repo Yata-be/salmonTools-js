@@ -1,0 +1,96 @@
+(() => {
+    let weapons = document.getElementById("weapons");
+    let waves = document.getElementById("waves");
+    const button = document.getElementById("btn");
+    let error = document.getElementById("error");
+    let print1 = document.getElementById("print1");
+    let print2 = document.getElementById("print2");
+    let print3 = document.getElementById("print3");
+    let overview1 = document.getElementById("overview1");
+    let overview2 = document.getElementById("overview2");
+    let exp = document.getElementById("exp");
+
+    // クマを除いたブキ種類数が変更されたら更新
+    const weaponTypeCount = 55;
+    const maxWaves = 700;
+
+    button.addEventListener("click", () => {
+        print1.textContent = "";
+        print2.textContent = "";
+        print3.textContent = "";
+
+        const weaponsCount = Number(weapons.value);
+        const wavesCount = Number(waves.value);
+
+        // バリデーション
+        if (!Number.isInteger(weaponsCount) || !Number.isInteger(wavesCount)) {
+            error.textContent = "ブキ数やWave数は整数値で入力してください。";
+            return;
+        }
+        if (weaponsCount < 0 || weaponsCount > weaponTypeCount) {
+            error.textContent = "ブキ数は0以上" + weaponTypeCount + "以下で入力してください。";
+            return;
+        }
+        if (wavesCount < 1 || wavesCount > maxWaves) {
+            error.textContent = "Wave数は1以上" + maxWaves + "以下で入力してください。";
+            return;
+        }
+        if (wavesCount < weaponsCount) {
+            error.textContent = "Wave数はブキ種類数以上にしてください。";
+            return;
+        }
+        error.textContent = "";
+
+        const table = probTable(weaponTypeCount, maxWaves)[wavesCount];
+        console.log(table);
+        const sum = table.reduce((s, e, i) => i >= weaponsCount ? s + e : s, 0);
+        console.log(sum);
+
+        if (sum >= 0.5) {
+            print1.textContent = "あなたの運は下振れしています。下振れ度：";
+            print2.textContent = Math.round((sum - 0.5) * 200).toString();
+            print3.textContent = "";
+        } else {
+            print1.textContent = "あなたの運は上振れしています。上振れ度：";
+            print2.textContent = "";
+            print3.textContent = Math.round((0.5 - sum) * 200).toString();
+        }
+
+        const sumDisplay = Math.round(sum * 100);
+        overview1.textContent = wavesCount + " Wavesで "
+            + weaponsCount + " 種類以上コンプできる確率は "
+            + sumDisplay;
+        // TODO: 指数表現実装
+        exp.textContent = "";
+        overview2.textContent = "% です。";
+    })
+})();
+
+// 確率テーブルの作成 probTable[i][j] = i回引いたときにj種類になる確率
+function probTable(weaponTypeCount, maxWaves) {
+    const kumaProb = 0.2;
+    const otherProb = 0.8 / weaponTypeCount;
+
+    const coef = new Array(weaponTypeCount + 1).fill(0)
+        .map((v, i) => kumaProb + i * otherProb);
+    const firstProb = new Array(weaponTypeCount + 1);
+    firstProb.fill(0);
+    firstProb[0] = 1;
+    const probTable = [];
+    probTable.push(firstProb);
+    console.log(probTable);
+
+    for (let i = 0; i < maxWaves; i++) {
+        const prevProb = probTable.slice(-1)[0];
+        const currentProb = [];
+
+        for (let j = 0; j < weaponTypeCount + 1; j++) {
+            currentProb.push(j === 0
+                ? prevProb[j] * coef[j]
+                : prevProb[j] * coef[j] + prevProb[j - 1] * (1 - coef[j - 1]));
+        }
+
+        probTable.push(currentProb);
+    }
+    return probTable;
+}

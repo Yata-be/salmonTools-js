@@ -1,10 +1,10 @@
-# salmonTools
+# salmonTools-js
 
 ## 概要
 サーモンランで使える（本当に？）ツール群を提供します。
 
 ## 閲覧リンク
-https://yata-be.github.io/salmonTools/
+https://yata-be.github.io/salmonTools-js/
 
 ## 内容
 ### 全ブキコンプ期待値計算
@@ -13,7 +13,7 @@ https://yata-be.github.io/salmonTools/
 自分のバイト評価値とノルマ個数をもとに、野良のバイト評価値を予測します。
 
 ## 使用技術
-PyScript, HTML, CSS
+JavaScript, HTML, CSS
 
 ## ライセンス
 [MITライセンス](LICENSE)です。
