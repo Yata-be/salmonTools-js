@@ -42,9 +42,7 @@
         error.textContent = "";
 
         const table = probTable(weaponTypeCount, maxWaves)[wavesCount];
-        console.log(table);
         const sum = table.reduce((s, e, i) => i >= weaponsCount ? s + e : s, 0);
-        console.log(sum);
 
         if (sum >= 0.5) {
             print1.textContent = "あなたの運は下振れしています。下振れ度：";
