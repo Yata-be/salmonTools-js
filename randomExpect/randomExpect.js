@@ -61,6 +61,8 @@
         // TODO: 指数表現実装
         exp.textContent = "";
         overview2.textContent = "% です。";
+
+        // console.log(calcExpectation(weaponTypeCount, weaponsCount, maxWaves));
     })
 })();
 
@@ -76,7 +78,6 @@ function probTable(weaponTypeCount, maxWaves) {
     firstProb[0] = 1;
     const probTable = [];
     probTable.push(firstProb);
-    console.log(probTable);
 
     for (let i = 0; i < maxWaves; i++) {
         const prevProb = probTable.slice(-1)[0];
@@ -91,4 +92,47 @@ function probTable(weaponTypeCount, maxWaves) {
         probTable.push(currentProb);
     }
     return probTable;
+}
+
+// startWeapons種類コンプしている状態で、あと何回でコンプできるかの期待値
+function calcExpectation(weaponTypeCount, startWeapons) {
+    // コーナーケース排除
+    if (weaponTypeCount <= 0 || startWeapons < 0) {
+        throw new Error("数値が不正です");
+    }
+    if (weaponTypeCount < startWeapons) {
+        throw new Error("現在の種類数が全種類数より多いです");
+    }
+    if (weaponTypeCount === startWeapons) {
+        return 0;
+    }
+
+    const maxWaves = 700;
+    const otherProb = 0.8 / weaponTypeCount;
+    const startProb = 0.2 + startWeapons * otherProb;
+    const arrayLength = weaponTypeCount - startWeapons + 1;
+
+    const coef = new Array(arrayLength).fill(0)
+        .map((v, i) => startProb + i * otherProb);
+    let prob = new Array(arrayLength);
+    prob.fill(0);
+    prob[0] = 1;
+
+    let sum = 0;
+    for (let i = 0; i < maxWaves; i++) {
+        const currentProb = [];
+
+        for (let j = 0; j < arrayLength; j++) {
+            currentProb.push(j === 0
+                ? prob[j] * coef[j]
+                : prob[j] * coef[j] + prob[j - 1] * (1 - coef[j - 1]));
+            if (j === arrayLength - 1) {
+                // 期待値 = (試行回数) * (ちょうどコンプする確率) を加算
+                sum += (i + 1) * prob[j - 1] * (1 - coef[j - 1]);
+            }
+        }
+
+        prob = currentProb;
+    }
+    return Math.round(sum);
 }
