@@ -7,8 +7,9 @@
     let print2 = document.getElementById("print2");
     let print3 = document.getElementById("print3");
     let overview1 = document.getElementById("overview1");
-    let overview2 = document.getElementById("overview2");
     let exp = document.getElementById("exp");
+    let overview2 = document.getElementById("overview2");
+    let expectation1 = document.getElementById("expectation1")
 
     // クマを除いたブキ種類数が変更されたら更新
     const weaponTypeCount = 55;
@@ -62,7 +63,17 @@
         exp.textContent = "";
         overview2.textContent = "% です。";
 
-        // console.log(calcExpectation(weaponTypeCount, weaponsCount, maxWaves));
+        try {
+            const expectation = calcExpectation(weaponTypeCount, weaponsCount, maxWaves);
+            if (expectation === 0) {
+                expectation1.textContent = "コンプおめでとうございます！";
+            } else {
+                expectation1.textContent = "コンプまでに必要なWave数の期待値は、約 " + expectation + " 回です。";
+            }
+        } catch (e) {
+            expectation1.textContent = "";
+            console.error(e);
+        }
     })
 })();
 
