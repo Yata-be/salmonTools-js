@@ -11,6 +11,18 @@
     let overview2 = document.getElementById("overview2");
     let expectation1 = document.getElementById("expectation1")
 
+    window.onload = () => {
+        weapons.value = localStorage.getItem("weapons");
+        waves.value = localStorage.getItem("waves");
+    }
+
+    weapons.addEventListener("input", () => {
+        localStorage.setItem("weapons", weapons.value);
+    })
+    waves.addEventListener("input", () => {
+        localStorage.setItem("waves", waves.value);
+    })
+
     // クマを除いたブキ種類数が変更されたら更新
     const weaponTypeCount = 55;
     const maxWaves = 700;
